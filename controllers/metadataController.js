@@ -8,18 +8,6 @@ const apiKey = process.env.API_NFTSTORAGE;
 const client = new NFTStorage({ token: apiKey })
 const metadataModel = require("../models/metadataModel");
 
-const multer=require('multer')
-const upload=multer({dest:'uploads', 
-fileFilter:(req,file,callback)=>{ 
-    if(file.mimetype.startsWith('application/json')){ 
-        callback(null,true)
-    }
-    else{
-        callback(null,false)
-    }
-},limits:{fileSize:5000000}})
-
-
 
 const uploadJson = async (req,res) => {
     let filename = req.query.filename;
@@ -75,12 +63,9 @@ const uploadJson = async (req,res) => {
 
     await fs.writeFileSync(`./public/${tokenId}.json`, String(JSON.stringify(metadata)), "utf-8" );
 
-    fs.renameSync(`./public/${tokenId}.json`,`uploads/${tokenId}.json`)
-
-
     const newMetadata = await new metadataModel({
         filename: `${tokenId}.json`,
-        url: `uploads/${tokenId}.json`,
+        url: `./public/${tokenId}.json`,
         createdAt: Date.now()
     });
 
